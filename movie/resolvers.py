@@ -8,6 +8,7 @@ def movie_with_id(_, info, _id):
     for movie in movies:
         if movie["id"] == _id:
             return movie
+    return None
 
 def all_movies(_, info):
     return load_movies()
@@ -40,23 +41,21 @@ def delete_movie(_, info, _id):
     raise GraphQLError(f"movie {_id} not found")
 
 def add_movie(_, info, _id, _title, _rate, _director):
-    new_movies = {}
     movies = load_movies()
     
     for movie in movies:
         if movie['id'] == _id:
             raise GraphQLError(f"movie with {_id} already exists")
 
-    new_movies = movies
     new_movie = {
         "id": _id,
         "title": _title,
         "rating": _rate,
         "director": _director
     }
-    new_movies.append(new_movie)
+    movies.append(new_movie)
     
-    write_movies(new_movies)
+    write_movies(movies)
     return new_movie
 
 def resolve_actors_in_movie(movie, info):
