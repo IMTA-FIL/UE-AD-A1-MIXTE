@@ -7,15 +7,21 @@ PORT = 3001
 HOST = '0.0.0.0'
 app = Flask(__name__)
 
-type_defs = load_schema_from_path("movie.graphql")
 query = QueryType()
-mutation = MutationType()
-movie = ObjectType("Movie")
-actor = ObjectType("Actor")
 query.set_field("movie_with_id", r.movie_with_id)
+query.set_field("all_movies", r.all_movies)
+query.set_field("movie_with_title", r.movie_with_title)
+
+mutation = MutationType()
 mutation.set_field("update_movie_rate", r.update_movie_rate)
 mutation.set_field("add_movie", r.add_movie)
+mutation.set_field("delete_movie", r.delete_movie)
+
+movie = ObjectType("Movie")
 movie.set_field("actors", r.resolve_actors_in_movie)
+
+type_defs = load_schema_from_path("movie.graphql")
+actor = ObjectType("Actor")
 schema = make_executable_schema(type_defs, movie, query, mutation, actor)
 
 # graphql entry points

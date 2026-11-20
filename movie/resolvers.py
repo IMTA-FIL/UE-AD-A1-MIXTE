@@ -1,25 +1,43 @@
 from graphql import GraphQLError
 from utils import write_movies, load_actors, load_movies
 
+# QUERIES
+
 def movie_with_id(_, info, _id):
     movies = load_movies()
     for movie in movies:
         if movie["id"] == _id:
             return movie
 
-def update_movie_rate(_, info, _id, _rate):
-    new_movies = {}
-    new_movie = {}
+def all_movies(_, info):
+    return load_movies()
+
+def movie_with_title(_, info, _title):
     movies = load_movies()
-    
     for movie in movies:
-        if movie['id'] == _id:
-            movie['rating'] = _rate
-            new_movie = movie
-            new_movies = movies
-    
-    write_movies(new_movies)
-    return new_movie
+        if movie["title"] == _title:
+            return movie
+    return None
+
+# MUTATIONS
+
+def update_movie_rate(_, info, _id, _rate):
+    movies = load_movies()
+    for movie in movies:
+        if movie["id"] == _id:
+            movie["rating"] = _rate
+            write_movies(movies)
+            return movie
+    raise GraphQLError(f"movie {_id} not found")
+
+def delete_movie(_, info, _id):
+    movies = load_movies()
+    for movie in movies:
+        if movie["id"] == _id:
+            movies.remove(movie)
+            write_movies(movies)
+            return movie
+    raise GraphQLError(f"movie {_id} not found")
 
 def add_movie(_, info, _id, _title, _rate, _director):
     new_movies = {}
